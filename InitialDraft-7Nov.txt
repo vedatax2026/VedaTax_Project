@@ -1,0 +1,19 @@
+Initial Draft
+
+Website Reference
+https://bluewingstax.com/?country=in
+
+Login Reference
+https://ustaxfiles.com/login
+
+Login Credentials
+Email: shanmuksai2003@gmail.com
+Password: Sh@nmuk@2003
+
+Website Update
+Modify the Services section to include:
+- US
+- Canada
+- India
+
+Add the relevant pop-ups/sub-menus for these services, following the existing behaviour and structure of the reference website.
