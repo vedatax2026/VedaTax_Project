@@ -147,6 +147,32 @@ Open http://localhost:5173. Vite proxies `/api` to `http://localhost:5080`.
 
 For a production build, set `VITE_API_BASE_URL` (see `.env.example`), then run `npm run build`.
 
+## Docker & Separate Deployments
+
+The website and API are dockerized separately and can be built and deployed independently.
+
+### Running with Docker Compose (Local Stack)
+```bash
+cp .env.example .env
+docker compose up -d
+```
+- Website: http://localhost (Port 80)
+- Backend API: http://localhost:5080 (Port 5080)
+- Swagger: http://localhost:5080/swagger
+
+### Independent Deployment Commands
+```bash
+# Build & deploy Website
+cd frontend
+docker build -t vedatax-website .
+
+# Build & deploy API
+cd backend
+docker build -t vedatax-api .
+```
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for full deployment instructions, environment variables, cloud deployment examples (AWS/GCP/Azure/Kubernetes), and conflict-prevention details.
+
 ## Assets / placeholders
 
 - Logo: `frontend/public/vedatax-mark.jpeg` and `vedatax-logo-full.jpeg` (from the provided images).
