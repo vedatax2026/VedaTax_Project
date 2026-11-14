@@ -35,29 +35,22 @@ cd "$REPO_ROOT/backend"
 echo "==> Submitting build to Google Cloud Build (Tag: $IMAGE_TAG)..."
 gcloud builds submit --tag "$IMAGE_TAG"
 
-# Default JWT Key if not provided (must be at least 32 characters)
+# Default Cloud SQL connection & JWT Key
+CLOUDSQL_INSTANCE="${CLOUDSQL_INSTANCE:-clear-doctor:asia-south1:vedatax-db}"
+DEFAULT_DB_CONN="Host=/cloudsql/${CLOUDSQL_INSTANCE};Port=5432;Database=vedatax;Username=postgres;Password=VedaTax-db1"
+DB_CONNECTION_STRING="${DB_CONNECTION_STRING:-$DEFAULT_DB_CONN}"
 JWT_KEY="${JWT_KEY:-vedatax-production-secret-signing-key-2026-min32chars}"
-WEBSITE_ORIGIN="${WEBSITE_ORIGIN:-https://my-website-service-1054434301459.europe-west1.run.app}"
+WEBSITE_ORIGIN_1="${WEBSITE_ORIGIN:-https://vedatax-website-1054434301459.europe-west1.run.app}"
+WEBSITE_ORIGIN_2="https://my-website-service-1054434301459.europe-west1.run.app"
 
-ENV_VARS="Jwt__Key=${JWT_KEY},Cors__Origins__0=${WEBSITE_ORIGIN}"
-
-if [ -n "$DB_CONNECTION_STRING" ]; then
-    ENV_VARS="${ENV_VARS},ConnectionStrings__Default=${DB_CONNECTION_STRING}"
-elif [ -n "$ConnectionStrings__Default" ]; then
-    ENV_VARS="${ENV_VARS},ConnectionStrings__Default=${ConnectionStrings__Default}"
-else
-    echo "----------------------------------------------------------"
-    echo "WARNING: No DB_CONNECTION_STRING specified."
-    echo "The .NET API requires a PostgreSQL connection string to start."
-    echo "Set DB_CONNECTION_STRING=\"Host=...;Database=vedatax;Username=...;Password=...\""
-    echo "----------------------------------------------------------"
-fi
+ENV_VARS="Jwt__Key=${JWT_KEY},Cors__Origins__0=${WEBSITE_ORIGIN_1},Cors__Origins__1=${WEBSITE_ORIGIN_2},ConnectionStrings__Default=${DB_CONNECTION_STRING}"
 
 echo "==> Deploying service '$SERVICE_NAME' to Cloud Run ($REGION)..."
 gcloud run deploy "$SERVICE_NAME" \
     --image "$IMAGE_TAG" \
     --region "$REGION" \
     --allow-unauthenticated \
+    --add-cloudsql-instances "$CLOUDSQL_INSTANCE" \
     --set-env-vars "$ENV_VARS"
 
 echo ""
