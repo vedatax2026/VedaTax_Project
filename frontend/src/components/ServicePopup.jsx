@@ -12,7 +12,7 @@ export default function ServicePopup({ code, onClose }) {
       {c && (
         <div className="service-popup">
           <div className="service-popup__head">
-            <span className={`flag flag--${c.code} flag--lg`}>{c.code.toUpperCase()}</span>
+            <img className="country-flag country-flag--lg" src={`/flag-${c.code}.svg`} alt={`${c.name} flag`} width="64" height="44" />
             <div>
               <p className="eyebrow">Services / {c.name}</p>
               <h2 id="service-popup-title">{c.menuTitle}</h2>

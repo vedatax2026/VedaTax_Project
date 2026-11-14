@@ -40,7 +40,7 @@ export default function ServicesMegaMenu({ onNavigate }) {
               aria-haspopup="true"
               aria-expanded={c.code === current.code}
             >
-              <span className={`flag flag--${c.code}`}>{c.code.toUpperCase()}</span>
+              <img className="country-flag" src={`/flag-${c.code}.svg`} alt="" width="34" height="24" />
               <span>
                 <strong>{c.menuTitle}</strong>
                 <small>{c.tagline}</small>

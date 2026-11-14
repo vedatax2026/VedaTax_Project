@@ -87,6 +87,7 @@ export default function Header() {
         <div className="header-actions">
           <label className="country-select">
             <span className="sr-only">Country</span>
+            <img src={`/flag-${country}.svg`} alt="" width="24" height="16" />
             <select value={country} onChange={(e) => setCountry(e.target.value)}>
               {Object.entries(COUNTRY_LABELS).map(([code, label]) => (
                 <option key={code} value={code}>{label}</option>
@@ -99,7 +100,7 @@ export default function Header() {
               <button type="button" className="nav__link nav__link--plain" onClick={logout}>Sign out</button>
             </>
           ) : (
-            <Link to="/login" className="btn btn--outline btn--sm">Login</Link>
+            <Link to="/login" className="btn btn--navy btn--sm">Login</Link>
           )}
         </div>
 
@@ -135,7 +136,7 @@ export default function Header() {
                   aria-expanded={mobileCountry === c.code}
                   onClick={() => setMobileCountry((m) => (m === c.code ? null : c.code))}
                 >
-                  <span><span className={`flag flag--${c.code}`}>{c.code.toUpperCase()}</span> {c.menuTitle}</span>
+                  <span className="mobile-nav__country-label"><img className="country-flag" src={`/flag-${c.code}.svg`} alt="" width="34" height="24" /> {c.menuTitle}</span>
                   <span aria-hidden="true">{mobileCountry === c.code ? '−' : '+'}</span>
                 </button>
                 {mobileCountry === c.code && (

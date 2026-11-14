@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSite } from '../context/SiteContext';
 import { api } from '../api/client';
@@ -16,11 +16,39 @@ export default function Home() {
   const { country, setCountry, menu, menuStatus, openEnquiry } = useSite();
   const { data: info } = useFetch(() => api.country(country), [country]);
   const [popup, setPopup] = useState(null);
+  const [activeStep, setActiveStep] = useState(0);
+  const [activeService, setActiveService] = useState(0);
+  const serviceIndex = activeService % Math.max(menu.length, 1);
+  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const stepsPlaying = !reducedMotion;
+
+  useEffect(() => {
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updateMotion = () => setReducedMotion(motion.matches);
+    motion.addEventListener('change', updateMotion);
+    return () => motion.removeEventListener('change', updateMotion);
+  }, []);
+
+  useEffect(() => {
+    if (!stepsPlaying) return undefined;
+    const timer = window.setTimeout(() => setActiveStep((step) => (step + 1) % STEPS.length), 4000);
+    return () => window.clearTimeout(timer);
+  }, [stepsPlaying, activeStep]);
+
+  useEffect(() => {
+    if (reducedMotion || menu.length < 2) return undefined;
+    const timer = window.setTimeout(() => setActiveService((index) => (index + 1) % menu.length), 4000);
+    return () => window.clearTimeout(timer);
+  }, [reducedMotion, activeService, menu.length]);
 
   return (
     <>
       {/* Hero – keeps the existing VedaTax hero (headline + Get Started) */}
       <section className="hero">
+        <div className="hero__background" aria-hidden="true">
+          <div className="hero__image hero__image--advice" />
+          <div className="hero__image hero__image--planning" />
+        </div>
         <div className="container hero__inner">
           {info && <p className="eyebrow eyebrow--light">{info.heroEyebrow}</p>}
           <h1>Professional Tax Solutions<br />for Your Growth</h1>
@@ -48,12 +76,12 @@ export default function Home() {
 
           {menuStatus === 'error' && <p className="form__error">Services could not be loaded. Please make sure the API is running.</p>}
 
-          <div className="service-cards">
+          <div className="service-cards service-cards--rotating">
             {menu.map((c, i) => (
-              <article key={c.code} className={`service-card ${c.code === country ? 'is-selected' : ''}`}>
+              <article key={c.code} aria-hidden={i !== serviceIndex}
+                className={`service-card service-card--${c.code} ${i === serviceIndex ? 'is-active' : ''} ${c.code === country ? 'is-selected' : ''}`}>
                 <div className="service-card__top">
-                  <span className={`flag flag--${c.code} flag--lg`}>{c.code.toUpperCase()}</span>
-                  <span className="service-card__num">0{i + 1}</span>
+                  <img className="service-card__flag" src={`/flag-${c.code}.svg`} alt={`${c.menuTitle} flag`} width="64" height="44" />
                 </div>
                 <h3>{c.menuTitle}</h3>
                 <p>{c.tagline}</p>
@@ -62,18 +90,29 @@ export default function Home() {
                   {c.services.length > 4 && <li className="muted">+ {c.services.length - 4} more</li>}
                 </ul>
                 <div className="service-card__actions">
-                  <button type="button" className="btn btn--navy btn--sm" onClick={() => setPopup(c.code)}>View services</button>
-                  <Link to={`/services/${c.code}`} className="link-arrow">Explore →</Link>
+                  <button type="button" className="btn btn--navy btn--sm" tabIndex={i === serviceIndex ? 0 : -1} onClick={() => setPopup(c.code)}>View services</button>
+                  <Link to={`/services/${c.code}`} className="link-arrow" tabIndex={i === serviceIndex ? 0 : -1}>Explore →</Link>
                 </div>
               </article>
             ))}
           </div>
+          {menu.length > 1 && (
+            <div className="service-cards__controls" role="group" aria-label="Choose a service card">
+              {menu.map((c, i) => (
+                <button key={c.code} type="button" className={`tab ${i === serviceIndex ? 'is-active' : ''}`}
+                  aria-pressed={i === serviceIndex} onClick={() => setActiveService(i)}>
+                  <img src={`/flag-${c.code}.svg`} alt="" width="24" height="16" />
+                  {c.menuTitle}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
       {/* Country-specific service grid, driven by the country selector */}
       {info && (
-        <section className="section section--tint">
+        <section className="section section--tint service-finder">
           <div className="container">
             <div className="section__head-row">
               <div>
@@ -85,6 +124,7 @@ export default function Home() {
                 {menu.map((c) => (
                   <button key={c.code} role="tab" aria-selected={c.code === country}
                     className={`tab ${c.code === country ? 'is-active' : ''}`} onClick={() => setCountry(c.code)}>
+                    <img src={`/flag-${c.code}.svg`} alt="" width="24" height="16" />
                     {c.menuTitle}
                   </button>
                 ))}
@@ -108,9 +148,11 @@ export default function Home() {
         <div className="container">
           <p className="eyebrow">What to expect</p>
           <h2 className="section__title">From first question to filing day.</h2>
-          <ol className="steps">
+          <ol className={`steps${stepsPlaying ? ' steps--playing' : ''}`} aria-live="off">
             {STEPS.map(([t, d], i) => (
-              <li key={t}><span className="steps__num">0{i + 1}</span><h3>{t}</h3><p>{d}</p></li>
+              <li key={t} className={i === activeStep ? 'is-active' : ''} aria-hidden={!reducedMotion && i !== activeStep}>
+                <span className="steps__num">0{i + 1}</span><h3>{t}</h3><p>{d}</p>
+              </li>
             ))}
           </ol>
         </div>

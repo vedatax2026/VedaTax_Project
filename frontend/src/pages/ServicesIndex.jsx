@@ -22,9 +22,12 @@ export default function ServicesIndex() {
           <p className="eyebrow">Services / {data?.name || ''}</p>
           <h1>{data?.menuTitle || 'Services'}</h1>
           {data && <p className="page-hero__lead">{data.heroSubtitle}</p>}
-          <div className="tabs tabs--left">
+          <div className="tabs tabs--left services-tabs">
             {menu.map((c) => (
-              <Link key={c.code} to={`/services/${c.code}`} className={`tab ${c.code === code ? 'is-active' : ''}`}>{c.menuTitle}</Link>
+              <Link key={c.code} to={`/services/${c.code}`} className={`tab ${c.code === code ? 'is-active' : ''}`}>
+                <img className="country-flag" src={`/flag-${c.code}.svg`} alt="" width="24" height="16" />
+                {c.menuTitle}
+              </Link>
             ))}
           </div>
         </div>
