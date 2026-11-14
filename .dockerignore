@@ -51,6 +51,6 @@
 **/*.tmp
 **/*.temp
 InitialDraft-*.txt
-*.jpeg
-*.jpg
-*.png
+/*.jpeg
+/*.jpg
+/*.png

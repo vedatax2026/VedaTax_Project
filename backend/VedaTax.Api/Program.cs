@@ -80,7 +80,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue("EnableSwagger", true))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
