@@ -6,6 +6,7 @@ export default function Footer() {
   const { menu } = useSite();
   return (
     <footer className="site-footer">
+      <div className="site-footer__sparkles" aria-hidden="true" />
       <div className="container site-footer__grid">
         <div>
           <Logo light />

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="600" viewBox="0 0 1440 600" fill="none">
+  <defs>
+    <linearGradient id="ribbon" x1="920" y1="600" x2="1450" y2="80" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0a5cab" stop-opacity=".05"/>
+      <stop offset=".55" stop-color="#2dd4bf" stop-opacity=".38"/>
+      <stop offset="1" stop-color="#a7f3d0" stop-opacity=".12"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="820" y1="600" x2="1440" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38bdf8" stop-opacity="0"/>
+      <stop offset=".65" stop-color="#6ee7b7" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#d1fae5" stop-opacity=".1"/>
+    </linearGradient>
+    <radialGradient id="glow">
+      <stop stop-color="#5eead4" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#5eead4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blue">
+      <stop stop-color="#38bdf8" stop-opacity=".24"/>
+      <stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="1350" cy="180" rx="440" ry="390" fill="url(#glow)"/>
+  <ellipse cx="80" cy="470" rx="440" ry="320" fill="url(#blue)"/>
+  <path d="M860 620c290-100 125-285 350-420 85-52 195-60 270-185v605Z" fill="url(#ribbon)"/>
+  <path d="M1030 620c220-135 115-325 290-395 70-28 130-90 160-180v575Z" fill="url(#ribbon)" opacity=".65"/>
+  <g stroke="url(#edge)" stroke-width="1.5">
+    <path d="M860 620c290-100 125-285 350-420 85-52 195-60 270-185"/>
+    <path d="M1030 620c220-135 115-325 290-395 70-28 130-90 160-180"/>
+    <path d="M940 620c265-115 135-310 315-395 95-45 170-100 225-210" opacity=".45"/>
+  </g>
+  <g stroke="#7dd3fc" stroke-opacity=".12">
+    <path d="M-80 75c280 20 40 340 290 390 160 32 210 95 255 155"/>
+    <path d="M-80 110c235 15 35 305 270 375 135 40 185 85 230 135"/>
+    <path d="M-80 145c190 10 30 270 245 360 110 46 160 75 205 115"/>
+  </g>
+  <g fill="#a7f3d0">
+    <circle cx="1190" cy="150" r="3" opacity=".5"/>
+    <circle cx="1365" cy="330" r="2" opacity=".4"/>
+    <circle cx="1050" cy="450" r="2" opacity=".3"/>
+    <circle cx="210" cy="120" r="2" opacity=".35"/>
+    <circle cx="125" cy="390" r="3" opacity=".3"/>
+  </g>
+</svg>

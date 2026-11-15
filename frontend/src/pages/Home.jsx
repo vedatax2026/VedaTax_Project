@@ -1,9 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSite } from '../context/SiteContext';
 import { api } from '../api/client';
 import useFetch from '../api/useFetch';
 import ServicePopup from '../components/ServicePopup';
+
+const HERO_PHOTOS = [
+  '/tax-documents.jpg',
+  '/tax-planning.jpg',
+  '/income-review.jpg',
+];
 
 const STEPS = [
   ['Tell us about your situation', 'Income, residency and the services you need.'],
@@ -16,42 +22,33 @@ export default function Home() {
   const { country, setCountry, menu, menuStatus, openEnquiry } = useSite();
   const { data: info } = useFetch(() => api.country(country), [country]);
   const [popup, setPopup] = useState(null);
-  const [activeStep, setActiveStep] = useState(0);
-  const [activeService, setActiveService] = useState(0);
-  const serviceIndex = activeService % Math.max(menu.length, 1);
-  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const stepsPlaying = !reducedMotion;
+  const [seenCards, setSeenCards] = useState([]);
+  const serviceCardsRef = useRef(null);
 
   useEffect(() => {
-    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const updateMotion = () => setReducedMotion(motion.matches);
-    motion.addEventListener('change', updateMotion);
-    return () => motion.removeEventListener('change', updateMotion);
-  }, []);
-
-  useEffect(() => {
-    if (!stepsPlaying) return undefined;
-    const timer = window.setTimeout(() => setActiveStep((step) => (step + 1) % STEPS.length), 4000);
-    return () => window.clearTimeout(timer);
-  }, [stepsPlaying, activeStep]);
-
-  useEffect(() => {
-    if (reducedMotion || menu.length < 2) return undefined;
-    const timer = window.setTimeout(() => setActiveService((index) => (index + 1) % menu.length), 4000);
-    return () => window.clearTimeout(timer);
-  }, [reducedMotion, activeService, menu.length]);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting || entry.intersectionRatio < .15) return;
+        const code = entry.target.dataset.country;
+        setSeenCards((seen) => seen.includes(code) ? seen : [...seen, code]);
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: .15 });
+    serviceCardsRef.current.querySelectorAll('.service-card').forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, [menu]);
 
   return (
     <>
-      {/* Hero – keeps the existing VedaTax hero (headline + Get Started) */}
-      <section className="hero">
-        <div className="hero__background" aria-hidden="true">
-          <div className="hero__image hero__image--advice" />
-          <div className="hero__image hero__image--planning" />
+      <section className="hero" aria-label="Tax services">
+        <div className="hero__photos" aria-hidden="true">
+          {HERO_PHOTOS.map((src) => (
+            <img key={src} src={src} alt="" className="hero__photo" />
+          ))}
         </div>
         <div className="container hero__inner">
           {info && <p className="eyebrow eyebrow--light">{info.heroEyebrow}</p>}
-          <h1>Professional Tax Solutions<br />for Your Growth</h1>
+          <h1>Professional Tax Solutions<br />for Your <span className="hero__accent">Growth</span></h1>
           <p className="hero__sub">{info?.heroSubtitle || 'US, Canada and India taxation — prepared accurately, explained clearly.'}</p>
           <div className="hero__ctas">
             <button type="button" className="btn btn--green btn--lg" onClick={() => openEnquiry({ country })}>Get Started</button>
@@ -67,8 +64,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Services – only US, Canada and India Taxation */}
-      <section className="section" id="services">
+      <section className="section home-services" id="services">
         <div className="container">
           <p className="eyebrow">Our services</p>
           <h2 className="section__title">Taxation services across three countries</h2>
@@ -76,10 +72,10 @@ export default function Home() {
 
           {menuStatus === 'error' && <p className="form__error">Services could not be loaded. Please make sure the API is running.</p>}
 
-          <div className="service-cards service-cards--rotating">
-            {menu.map((c, i) => (
-              <article key={c.code} aria-hidden={i !== serviceIndex}
-                className={`service-card service-card--${c.code} ${i === serviceIndex ? 'is-active' : ''} ${c.code === country ? 'is-selected' : ''}`}>
+          <div className="service-cards" ref={serviceCardsRef}>
+            {menu.map((c) => (
+              <article key={c.code} data-country={c.code}
+                className={`service-card ${c.code === country ? 'is-selected' : ''}${seenCards.includes(c.code) ? ' has-entered' : ''}`}>
                 <div className="service-card__top">
                   <img className="service-card__flag" src={`/flag-${c.code}.svg`} alt={`${c.menuTitle} flag`} width="64" height="44" />
                 </div>
@@ -90,23 +86,12 @@ export default function Home() {
                   {c.services.length > 4 && <li className="muted">+ {c.services.length - 4} more</li>}
                 </ul>
                 <div className="service-card__actions">
-                  <button type="button" className="btn btn--navy btn--sm" tabIndex={i === serviceIndex ? 0 : -1} onClick={() => setPopup(c.code)}>View services</button>
-                  <Link to={`/services/${c.code}`} className="link-arrow" tabIndex={i === serviceIndex ? 0 : -1}>Explore →</Link>
+                  <button type="button" className="btn btn--navy btn--sm" onClick={() => setPopup(c.code)}>View services</button>
+                  <Link to={`/services/${c.code}`} className="link-arrow">Explore →</Link>
                 </div>
               </article>
             ))}
           </div>
-          {menu.length > 1 && (
-            <div className="service-cards__controls" role="group" aria-label="Choose a service card">
-              {menu.map((c, i) => (
-                <button key={c.code} type="button" className={`tab ${i === serviceIndex ? 'is-active' : ''}`}
-                  aria-pressed={i === serviceIndex} onClick={() => setActiveService(i)}>
-                  <img src={`/flag-${c.code}.svg`} alt="" width="24" height="16" />
-                  {c.menuTitle}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
@@ -144,13 +129,13 @@ export default function Home() {
         </section>
       )}
 
-      <section className="section">
+      <section className="section home-process">
         <div className="container">
           <p className="eyebrow">What to expect</p>
           <h2 className="section__title">From first question to filing day.</h2>
-          <ol className={`steps${stepsPlaying ? ' steps--playing' : ''}`} aria-live="off">
+          <ol className="steps">
             {STEPS.map(([t, d], i) => (
-              <li key={t} className={i === activeStep ? 'is-active' : ''} aria-hidden={!reducedMotion && i !== activeStep}>
+              <li key={t}>
                 <span className="steps__num">0{i + 1}</span><h3>{t}</h3><p>{d}</p>
               </li>
             ))}
@@ -158,7 +143,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section section--navy">
+      <section className="section section--navy home-cross-border">
         <div className="container cross-border">
           <div>
             <p className="eyebrow eyebrow--light">NRI & cross-border filing</p>
@@ -173,7 +158,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section home-cta">
         <div className="container cta-band">
           <div>
             <h2>Let’s make the next step clear.</h2>

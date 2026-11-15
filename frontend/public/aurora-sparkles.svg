@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="600" viewBox="0 0 1440 600" fill="none">
+  <defs>
+    <radialGradient id="halo">
+      <stop stop-color="#6ee7b7" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+    <path id="star" d="M0-10 2-2 10 0 2 2 0 10-2 2-10 0-2-2Z" fill="#d1fae5"/>
+  </defs>
+  <ellipse cx="90" cy="180" rx="270" ry="230" fill="url(#halo)"/>
+  <ellipse cx="1340" cy="390" rx="300" ry="270" fill="url(#halo)"/>
+  <g opacity=".8">
+    <use href="#star" transform="translate(100 80)"/>
+    <use href="#star" transform="translate(280 135) scale(.6)"/>
+    <use href="#star" transform="translate(70 300) scale(.7)"/>
+    <use href="#star" transform="translate(200 430)"/>
+    <use href="#star" transform="translate(370 525) scale(.5)"/>
+    <use href="#star" transform="translate(550 45) scale(.5)"/>
+    <use href="#star" transform="translate(860 70) scale(.6)"/>
+    <use href="#star" transform="translate(1150 100) scale(.8)"/>
+    <use href="#star" transform="translate(1320 175)"/>
+    <use href="#star" transform="translate(1240 310) scale(.6)"/>
+    <use href="#star" transform="translate(1390 445)"/>
+    <use href="#star" transform="translate(1060 510) scale(.7)"/>
+    <use href="#star" transform="translate(730 545) scale(.5)"/>
+  </g>
+  <g fill="#a5f3fc" opacity=".6">
+    <circle cx="160" cy="200" r="2"/><circle cx="310" cy="370" r="1.5"/>
+    <circle cx="430" cy="80" r="2"/><circle cx="1020" cy="160" r="1.5"/>
+    <circle cx="1180" cy="410" r="2"/><circle cx="930" cy="535" r="1.5"/>
+    <circle cx="1270" cy="540" r="2"/><circle cx="65" cy="510" r="1.5"/>
+  </g>
+</svg>
