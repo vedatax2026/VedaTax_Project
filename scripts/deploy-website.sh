@@ -42,11 +42,14 @@ cd "$REPO_ROOT/frontend"
 echo "==> Submitting build to Google Cloud Build (Tag: $IMAGE_TAG)..."
 gcloud builds submit --tag "$IMAGE_TAG"
 
+BACKEND_URL="${BACKEND_URL:-https://vedatax-api-1054434301459.europe-west1.run.app}"
+
 echo "==> Deploying service '$SERVICE_NAME' to Cloud Run ($REGION)..."
 gcloud run deploy "$SERVICE_NAME" \
     --image "$IMAGE_TAG" \
     --region "$REGION" \
-    --allow-unauthenticated
+    --allow-unauthenticated \
+    --set-env-vars "BACKEND_URL=${BACKEND_URL}"
 
 echo ""
 echo "=========================================================="
